@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Flex } from "@mantine/core/";
+import { useState } from "react";
+import "./App.css";
+import { TimerDurationContext } from "./context";
+import DisplayTimer from "./pages/DisplayTimer";
+import TaskList from "./pages/TaskList";
 
 function App() {
+  const [timerDuration, setTimerDuration] = useState(5);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <TimerDurationContext.Provider
+      value={{
+        timerDuration,
+        setTimerDuration,
+      }}
+    >
+      <Flex
+        mih={50}
+        gap="md"
+        justify="center"
+        align="flex-start"
+        direction="row"
+        wrap="wrap"
+      >
+        <TaskList />
+        <DisplayTimer />
+      </Flex>
+    </TimerDurationContext.Provider>
   );
 }
 

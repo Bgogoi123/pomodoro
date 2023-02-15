@@ -1,28 +1,19 @@
-import {
-  Button,
-  Center,
-  Flex,
-  Modal,
-  RingProgress,
-  TextInput,
-} from "@mantine/core";
+import { Button, Center, Flex, RingProgress } from "@mantine/core";
 import { useEffect, useState } from "react";
+import beep2 from "../../assets/audios/beep2.mp3";
 import { ReactComponent as CoffeeIcon } from "../../assets/icons/coffee.svg";
 import { ReactComponent as WorkIcon } from "../../assets/icons/keyboard1.svg";
+import { TIMERS } from "../constants";
+import Durations from "../Durations";
+import EditTimes from "../EditTimes";
 import "../parentStyles.css";
-import "./style.css";
+import { toGetTime } from "./calculation";
 import { onBreak, working } from "./style";
-import beep2 from "../../assets/audios/beep2.mp3";
-
-let TIMERS = {
-  BREAK_DURATION: 3,
-  WORK_DURATION: 10,
-  CYCLE_DURATION: 1,
-};
+import "./style.css";
 
 const DisplayTimer = () => {
   const [workDuration, setWorkDuration] = useState<number>(
-    TIMERS.WORK_DURATION
+    TIMERS.WORK_DURATION * 60
   );
   const [breakDuration, setBreakDuraton] = useState<number>(
     TIMERS.BREAK_DURATION
@@ -36,14 +27,13 @@ const DisplayTimer = () => {
   const [updatedBreakTime, setUpdatedBreakTime] =
     useState<number>(breakDuration);
   const [updatedWorkTime, setUpdatedWorkTime] = useState<number>(0);
-  const [workSeconds, setWorkSeconds] = useState<number>(10);
 
-  let beepAudio = { audio: new Audio(beep2) };
+  let beepAudio = new Audio(beep2);
 
   const openModal = () => {
     setOpen(true);
     setUpdatedBreakTime(breakDuration);
-    setUpdatedWorkTime(workDuration);
+    setUpdatedWorkTime(Math.floor(workDuration / 60));
   };
 
   const handleChangeBreak = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,113 +45,82 @@ const DisplayTimer = () => {
   };
 
   const handleSave = () => {
-    setWorkDuration(updatedWorkTime);
-    setBreakDuraton(updatedBreakTime);
-    TIMERS.BREAK_DURATION = updatedBreakTime;
-    TIMERS.WORK_DURATION = updatedWorkTime;
-    setOpen(false);
+    if (!isNaN(updatedWorkTime) && !isNaN(updatedBreakTime)) {
+      setWorkDuration(updatedWorkTime * 60);
+      setBreakDuraton(updatedBreakTime);
+      TIMERS.BREAK_DURATION = updatedBreakTime;
+      TIMERS.WORK_DURATION = updatedWorkTime;
+      setOpen(false);
+    }
   };
 
   const resetTimer = () => {
-    setWorkDuration(TIMERS.WORK_DURATION);
+    setWorkDuration(TIMERS.WORK_DURATION * 60);
     setBreakDuraton(TIMERS.BREAK_DURATION);
     setCycle(TIMERS.CYCLE_DURATION);
     setIsBreak(false);
     setStartTimer(false);
   };
 
-  function toGetTime() {
-    let duration = workDuration.toString();
-    let time = `00:${duration}:${workSeconds}`;
-    let newtime: any = time.split(":");
-    let now = new Date();
-    var date = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      ...newtime
-    );
-    var toTime = date.toLocaleTimeString("it-IT");
-    return toTime;
-  }
-
   useEffect(() => {
     if (cycle > 0 && startTimer) {
       let timerRef = setInterval(() => {
-        setWorkSeconds((prevSeconds) => {
-          if (prevSeconds > 0) {
-            prevSeconds = prevSeconds - 1;
-          } else {
-            // decrement minutes:
-            setWorkDuration((prev) => {
-              prev = prev - 1;
+        setWorkDuration((prev) => {
+          prev = prev - 1;
 
-              if (prev < 0 && !isBreak) {
-                setIsBreak(!isBreak);
-                clearInterval(localStorage.getItem("timerRef") as string);
-                console.log("BEEP");
-                beepAudio.audio.play();
-                return breakDuration;
-              }
-
-              if (prev < 0 && isBreak) {
-                setIsBreak(!isBreak);
-                clearInterval(localStorage.getItem("timerRef") as string);
-                if (cycle !== 0) {
-                  setCycle((prev) => {
-                    let temp = cycle - 1;
-                    return temp;
-                  });
-                }
-                console.log("BEEP");
-                beepAudio.audio.play();
-                return TIMERS.WORK_DURATION;
-              }
-
-              if (cycle < 0) {
-                setIsBreak(false);
-                clearInterval(localStorage.getItem("timerRef") as string);
-                console.log("BEEP");
-                beepAudio.audio.play();
-                return TIMERS.WORK_DURATION;
-              }
-
-              return prev;
-            });
-            prevSeconds = 9;
+          if (prev < 0 && !isBreak) {
+            setIsBreak(!isBreak);
+            clearInterval(localStorage.getItem("timerRef") as string);
+            beepAudio.play();
+            return breakDuration * 60;
           }
-          return prevSeconds;
+
+          if (prev < 0 && isBreak) {
+            setIsBreak(!isBreak);
+            clearInterval(localStorage.getItem("timerRef") as string);
+            if (cycle !== 0) {
+              setCycle((prev) => {
+                let temp = cycle - 1;
+                return temp;
+              });
+            }
+            beepAudio.play();
+            return TIMERS.WORK_DURATION * 60;
+          }
+
+          if (cycle < 0) {
+            setIsBreak(false);
+            clearInterval(localStorage.getItem("timerRef") as string);
+            beepAudio.play();
+            return TIMERS.WORK_DURATION * 60;
+          }
+
+          return prev;
         });
       }, 1000);
       localStorage.clear();
       localStorage.setItem("timerRef", JSON.stringify(timerRef));
       return () => clearInterval(localStorage.getItem("timerRef") as string);
-    } else {
-      // 1 Podoromo Task Duration Completed : Set all to default.
-      resetTimer();
     }
   }, [isBreak, startTimer]);
 
   return (
     <Flex
       gap="md"
-      justify="center"
       align="center"
       direction="column"
       wrap="wrap"
       sx={isBreak ? onBreak : working}
     >
       <p className="headerText">Timer</p>
+
+      {/* <Durations /> */}
       <Flex
         direction={"column"}
-        justify={"center"}
         align={"center"}
         gap={"md"}
         sx={{
-          border: "1px solid #d6d6d6",
-          boxShadow: "0px 0px 5px 2px #d6d6d6",
-          borderRadius: "10px",
-          width: "150px",
+          width: "200px",
           backgroundColor: "#fff",
           padding: "1em",
           textAlign: "center",
@@ -175,7 +134,7 @@ const DisplayTimer = () => {
           leftIcon={<CoffeeIcon width={"25px"} height={"25px"} />}
           title={"Break Duration"}
         >
-          - {TIMERS.BREAK_DURATION}
+          {TIMERS.BREAK_DURATION} minutes
         </Button>
         <Button
           variant="light"
@@ -185,14 +144,16 @@ const DisplayTimer = () => {
           leftIcon={<WorkIcon width={"30px"} height={"30px"} />}
           title={"Work Duration"}
         >
-          - {TIMERS.WORK_DURATION}
+          {TIMERS.WORK_DURATION} minutes
         </Button>
       </Flex>
 
       <Button onClick={openModal} variant="outline" color="violet">
         Edit Timers
       </Button>
-      <p>{toGetTime()}</p>
+      <div className="timerContainer">
+        <p className="time">{toGetTime(workDuration)}</p>
+      </div>
       <RingProgress
         size={50}
         roundCaps
@@ -215,7 +176,7 @@ const DisplayTimer = () => {
 
       <div>
         <Button
-          color="indigo"
+          color="violet"
           onClick={() => setCycle((prev) => prev + 1)}
           sx={{ margin: "0.5em" }}
         >
@@ -240,8 +201,7 @@ const DisplayTimer = () => {
           color={startTimer ? "yellow" : "green"}
           onClick={() =>
             setStartTimer((prev) => {
-              console.log("BEEP ON BUTTON");
-              beepAudio.audio.play();
+              beepAudio.play();
               return !prev;
             })
           }
@@ -255,30 +215,15 @@ const DisplayTimer = () => {
         </Button>
       </div>
 
-      <Modal opened={open} onClose={() => setOpen(false)} title="Edit Timers">
-        <Flex
-          gap={"md"}
-          direction={"column"}
-          align="center"
-          sx={{ margin: "1em" }}
-        >
-          <TextInput
-            type={"number"}
-            placeholder="Enter Break Time"
-            label={"Enter Break Time"}
-            value={updatedBreakTime}
-            onChange={(e) => handleChangeBreak(e)}
-          />
-          <TextInput
-            type={"number"}
-            placeholder="Enter Work Time"
-            label={"Enter Work Time"}
-            value={updatedWorkTime}
-            onChange={(e) => handleChangeWork(e)}
-          />
-          <Button onClick={handleSave}>Save</Button>
-        </Flex>
-      </Modal>
+      <EditTimes
+        open={open}
+        setOpen={setOpen}
+        handleSave={handleSave}
+        updatedWorkTime={updatedWorkTime}
+        updatedBreakTime={updatedBreakTime}
+        handleChangeWork={handleChangeWork}
+        handleChangeBreak={handleChangeBreak}
+      />
     </Flex>
   );
 };

@@ -11,9 +11,9 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle, IconEdit } from "@tabler/icons-react";
 import { useState } from "react";
+import "../parentStyles.css";
 import { Itasks } from "../../interfaces";
 import { generalText, strikeText, taskRoot } from "./styles";
-import "../parentStyles.css"
 
 const TaskList = () => {
   const [tasks, setTasks] = useState<Itasks[] | []>([]);
@@ -71,53 +71,57 @@ const TaskList = () => {
 
   return (
     <Flex
-      gap="md"
-      justify="space-between"
-      // align="center"
-      direction="column"
-      wrap="wrap"
+      direction={"column"}
+      justify={"space-between"}
+      gap={"xl"}
+      wrap={"wrap"}
       sx={taskRoot}
     >
-      <p className="headerText">Pending Tasks</p>
-      <Grid>
-        {tasks.length > 0 ? (
-          tasks.map((task, index) => {
-            return (
-              <Grid.Col key={index}>
+      <div>
+        <p className="headerText">Pending Tasks</p>
+        <div>
+          {tasks.length > 0 ? (
+            tasks.map((task, index) => {
+              return (
                 <Checkbox
                   checked={task.checked}
                   label={
-                    <Flex gap={"10px"} align="center">
+                    <Flex
+                      gap={"10px"}
+                      align="center"
+                      sx={{ cursor: "pointer" }}
+                    >
                       <Text
                         fz="md"
                         sx={task.checked ? strikeText : generalText}
                       >
                         {task.label}
                       </Text>
+
                       <ActionIcon onClick={() => editTask(index)}>
                         <IconEdit size={"20px"} color={"teal"} />
                       </ActionIcon>
-                      <CloseButton
-                        aria-label="Close modal"
-                        color={"red"}
-                        title="Delete Task"
-                        onClick={() => deleteTask(index)}
-                      />
+                      {task.checked && (
+                        <CloseButton
+                          aria-label="Close modal"
+                          color={"red"}
+                          title="Delete Task"
+                          onClick={() => deleteTask(index)}
+                        />
+                      )}
                     </Flex>
                   }
                   onChange={(event) => handleCheckTask(event, index)}
                 />
-              </Grid.Col>
-            );
-          })
-        ) : (
-          <Grid.Col>
+              );
+            })
+          ) : (
             <Alert icon={<IconAlertCircle size={16} />} color="yellow">
-              <b style={{ color: "#fab005" }}>No Task Left</b>
+              <b className="warningText">No Task Left</b>
             </Alert>
-          </Grid.Col>
-        )}
-      </Grid>
+          )}
+        </div>
+      </div>
       <Grid>
         <Grid.Col>
           <TextInput
@@ -127,7 +131,7 @@ const TaskList = () => {
           />
         </Grid.Col>
         <Grid.Col>
-          <Button fullWidth bg={"indigo"} onClick={addTask}>
+          <Button fullWidth bg={"violet"} onClick={addTask}>
             Add Task
           </Button>
         </Grid.Col>

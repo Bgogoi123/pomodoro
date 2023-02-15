@@ -7,3 +7,5 @@ export const toGetTime = (time: number) => {
   }`;
   return duration;
 };
+
+

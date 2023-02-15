@@ -1,16 +1,17 @@
+import { TIMERS } from "../constants";
 import { Button, Flex } from "@mantine/core";
 import { ReactComponent as CoffeeIcon } from "../../assets/icons/coffee.svg";
 import { ReactComponent as WorkIcon } from "../../assets/icons/keyboard1.svg";
-import { TIMERS } from "../constants";
 
 const Durations = () => {
   return (
     <Flex
-      direction={"column"}
+      direction={"row"}
+      justify={"center"}
       align={"center"}
       gap={"md"}
       sx={{
-        width: "200px",
+        // width: "200px",
         backgroundColor: "#fff",
         padding: "1em",
         textAlign: "center",

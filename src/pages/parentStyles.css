@@ -1,4 +1,6 @@
 .headerText {
+  padding-top: 2em;
+  line-height: 0px;
   font-size: 24px;
   font-weight: 500;
   color: rgba(127, 35, 213, 0.995);
@@ -7,4 +9,11 @@
 
 .warningText {
   color: #fab005;
+}
+
+.messageText {
+  line-height: 0px;
+  font-size: 24px;
+  font-weight: 500;
+  color: rgb(71, 19, 120);
 }

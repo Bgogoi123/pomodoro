@@ -1,7 +1,7 @@
 import { Button, Flex, Modal, TextInput } from "@mantine/core";
 import { IEditTimesModal } from "../../interfaces";
 
-const EditTimes = ({
+const EditTimesModal = ({
   open,
   updatedWorkTime,
   updatedBreakTime,
@@ -38,4 +38,4 @@ const EditTimes = ({
   );
 };
 
-export default EditTimes;
+export default EditTimesModal;

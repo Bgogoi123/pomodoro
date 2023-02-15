@@ -1,15 +1,14 @@
 import { Button, Center, Flex, RingProgress } from "@mantine/core";
 import { useEffect, useState } from "react";
-import beep2 from "../../assets/audios/beep2.mp3";
-import { ReactComponent as CoffeeIcon } from "../../assets/icons/coffee.svg";
-import { ReactComponent as WorkIcon } from "../../assets/icons/keyboard1.svg";
-import { TIMERS } from "../constants";
-import Durations from "../Durations";
-import EditTimes from "../EditTimes";
+import "./style.css";
 import "../parentStyles.css";
+import Durations from "../Durations";
+import { TIMERS } from "../constants";
 import { toGetTime } from "./calculation";
 import { onBreak, working } from "./style";
-import "./style.css";
+import beep2 from "../../assets/audios/beep2.mp3";
+import DurationMessage from "../Durations/DurationMessage";
+import EditTimesModal from "../EditTimesModal";
 
 const DisplayTimer = () => {
   const [workDuration, setWorkDuration] = useState<number>(
@@ -55,15 +54,24 @@ const DisplayTimer = () => {
   };
 
   const resetTimer = () => {
-    setWorkDuration(TIMERS.WORK_DURATION * 60);
-    setBreakDuraton(TIMERS.BREAK_DURATION);
-    setCycle(TIMERS.CYCLE_DURATION);
+    TIMERS.BREAK_DURATION = 3;
+    TIMERS.WORK_DURATION = 10;
+    TIMERS.CYCLE_DURATION = 1;
+
+    setWorkDuration(10 * 60);
+    setBreakDuraton(3);
+    setCycle(1);
     setIsBreak(false);
     setStartTimer(false);
   };
 
   useEffect(() => {
+    operateTime();
+  }, [isBreak, startTimer, cycle]);
+
+  const operateTime = () => {
     if (cycle > 0 && startTimer) {
+      console.log({ cycle });
       let timerRef = setInterval(() => {
         setWorkDuration((prev) => {
           prev = prev - 1;
@@ -79,7 +87,7 @@ const DisplayTimer = () => {
             setIsBreak(!isBreak);
             clearInterval(localStorage.getItem("timerRef") as string);
             if (cycle !== 0) {
-              setCycle((prev) => {
+              setCycle(() => {
                 let temp = cycle - 1;
                 return temp;
               });
@@ -102,7 +110,8 @@ const DisplayTimer = () => {
       localStorage.setItem("timerRef", JSON.stringify(timerRef));
       return () => clearInterval(localStorage.getItem("timerRef") as string);
     }
-  }, [isBreak, startTimer]);
+    setStartTimer(false);
+  };
 
   return (
     <Flex
@@ -112,48 +121,18 @@ const DisplayTimer = () => {
       wrap="wrap"
       sx={isBreak ? onBreak : working}
     >
-      <p className="headerText">Timer</p>
+      <p className="headerText">POMODORO</p>
 
-      {/* <Durations /> */}
-      <Flex
-        direction={"column"}
-        align={"center"}
-        gap={"md"}
-        sx={{
-          width: "200px",
-          backgroundColor: "#fff",
-          padding: "1em",
-          textAlign: "center",
-        }}
-      >
-        <Button
-          variant="light"
-          color={"yellow"}
-          size={"lg"}
-          fullWidth
-          leftIcon={<CoffeeIcon width={"25px"} height={"25px"} />}
-          title={"Break Duration"}
-        >
-          {TIMERS.BREAK_DURATION} minutes
-        </Button>
-        <Button
-          variant="light"
-          color={"green"}
-          size={"lg"}
-          fullWidth
-          leftIcon={<WorkIcon width={"30px"} height={"30px"} />}
-          title={"Work Duration"}
-        >
-          {TIMERS.WORK_DURATION} minutes
-        </Button>
-      </Flex>
+      <Durations />
 
       <Button onClick={openModal} variant="outline" color="violet">
         Edit Timers
       </Button>
+
       <div className="timerContainer">
         <p className="time">{toGetTime(workDuration)}</p>
       </div>
+
       <RingProgress
         size={50}
         roundCaps
@@ -161,18 +140,8 @@ const DisplayTimer = () => {
         sections={[{ value: 100, color: "#6888e8" }]}
         label={<Center>{cycle}</Center>}
       />
-      <Flex direction={"row"} align={"center"} gap={"xs"}>
-        {isBreak ? (
-          <>
-            <p>Break Time! Grab your </p>{" "}
-            <CoffeeIcon title="Coffee" className="shakedIcon" />
-          </>
-        ) : (
-          <>
-            <p>Working </p> <WorkIcon title="Working" className="shakedIcon" />
-          </>
-        )}
-      </Flex>
+
+      <DurationMessage isBreak={isBreak} startTimer={startTimer} />
 
       <div>
         <Button
@@ -215,7 +184,7 @@ const DisplayTimer = () => {
         </Button>
       </div>
 
-      <EditTimes
+      <EditTimesModal
         open={open}
         setOpen={setOpen}
         handleSave={handleSave}

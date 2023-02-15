@@ -13,11 +13,11 @@
   color: rgb(98, 55, 138);
 }
 
-.shakedIcon {
-  animation: shake 2s infinite;
+.swingIcon {
+  animation: swing 2s infinite;
 }
 
-@keyframes shake {
+@keyframes swing {
   0% {
     transform: rotate(-20deg);
   }

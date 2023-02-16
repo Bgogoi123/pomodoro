@@ -1,5 +1,6 @@
 import { Button, Flex, Modal, TextInput } from "@mantine/core";
 import { IEditTimesModal } from "../../interfaces";
+import { textCursor } from "../Durations/styles";
 
 const EditTimesModal = ({
   open,
@@ -24,6 +25,7 @@ const EditTimesModal = ({
           label={"Enter Break Time"}
           value={updatedBreakTime}
           onChange={(e) => handleChangeBreak(e)}
+          sx={textCursor}
         />
         <TextInput
           type={"number"}
@@ -31,6 +33,7 @@ const EditTimesModal = ({
           label={"Enter Work Time (in minutes) "}
           value={updatedWorkTime}
           onChange={(e) => handleChangeWork(e)}
+          sx={textCursor}
         />
         <Button onClick={handleSave}>Save</Button>
       </Flex>

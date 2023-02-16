@@ -1,5 +1,5 @@
 export const TIMERS = {
   BREAK_DURATION: 3,
-  WORK_DURATION: 10,
+  WORK_DURATION: 1,
   CYCLE_DURATION: 1,
 };

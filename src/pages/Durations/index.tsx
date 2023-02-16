@@ -2,6 +2,7 @@ import { TIMERS } from "../constants";
 import { Button, Flex } from "@mantine/core";
 import { ReactComponent as CoffeeIcon } from "../../assets/icons/coffee.svg";
 import { ReactComponent as WorkIcon } from "../../assets/icons/keyboard1.svg";
+import { durationContainer, textCursor } from "./styles";
 
 const Durations = () => {
   return (
@@ -10,12 +11,7 @@ const Durations = () => {
       justify={"center"}
       align={"center"}
       gap={"md"}
-      sx={{
-        // width: "200px",
-        backgroundColor: "#fff",
-        padding: "1em",
-        textAlign: "center",
-      }}
+      sx={durationContainer}
     >
       <Button
         variant="light"
@@ -24,6 +20,7 @@ const Durations = () => {
         fullWidth
         leftIcon={<CoffeeIcon width={"25px"} height={"25px"} />}
         title={"Break Duration"}
+        sx={textCursor}
       >
         {TIMERS.BREAK_DURATION} minutes
       </Button>
@@ -34,6 +31,7 @@ const Durations = () => {
         fullWidth
         leftIcon={<WorkIcon width={"30px"} height={"30px"} />}
         title={"Work Duration"}
+        sx={textCursor}
       >
         {TIMERS.WORK_DURATION} minutes
       </Button>

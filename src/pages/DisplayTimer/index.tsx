@@ -66,51 +66,51 @@ const DisplayTimer = () => {
   };
 
   useEffect(() => {
-    operateTime();
-  }, [isBreak, startTimer, cycle]);
-
-  const operateTime = () => {
+    if (TIMERS.WORK_DURATION <= 0) return;
     if (cycle > 0 && startTimer) {
-      console.log({ cycle });
-      let timerRef = setInterval(() => {
-        setWorkDuration((prev) => {
-          prev = prev - 1;
-
-          if (prev < 0 && !isBreak) {
-            setIsBreak(!isBreak);
-            clearInterval(localStorage.getItem("timerRef") as string);
-            beepAudio.play();
-            return breakDuration * 60;
-          }
-
-          if (prev < 0 && isBreak) {
-            setIsBreak(!isBreak);
-            clearInterval(localStorage.getItem("timerRef") as string);
-            if (cycle !== 0) {
-              setCycle(() => {
-                let temp = cycle - 1;
-                return temp;
-              });
-            }
-            beepAudio.play();
-            return TIMERS.WORK_DURATION * 60;
-          }
-
-          if (cycle < 0) {
-            setIsBreak(false);
-            clearInterval(localStorage.getItem("timerRef") as string);
-            beepAudio.play();
-            return TIMERS.WORK_DURATION * 60;
-          }
-
-          return prev;
-        });
-      }, 1000);
-      localStorage.clear();
-      localStorage.setItem("timerRef", JSON.stringify(timerRef));
+      operations();
       return () => clearInterval(localStorage.getItem("timerRef") as string);
     }
     setStartTimer(false);
+  }, [isBreak, startTimer, cycle, workDuration]);
+
+  const operations = () => {
+    let timerRef = setInterval(() => {
+      setWorkDuration((prev) => {
+        prev = prev - 1;
+
+        if (prev < 0 && !isBreak) {
+          setIsBreak(!isBreak);
+          clearInterval(localStorage.getItem("timerRef") as string);
+          beepAudio.play();
+          return breakDuration * 60;
+        }
+
+        if (prev < 0 && isBreak) {
+          setIsBreak(!isBreak);
+          clearInterval(localStorage.getItem("timerRef") as string);
+          if (cycle !== 0) {
+            setCycle(() => {
+              let temp = cycle - 1;
+              return temp;
+            });
+          }
+          beepAudio.play();
+          return TIMERS.WORK_DURATION * 60;
+        }
+
+        if (cycle < 0) {
+          setIsBreak(false);
+          clearInterval(localStorage.getItem("timerRef") as string);
+          beepAudio.play();
+          return TIMERS.WORK_DURATION * 60;
+        }
+
+        return prev;
+      });
+    }, 1000);
+    localStorage.clear();
+    localStorage.setItem("timerRef", JSON.stringify(timerRef));
   };
 
   return (
@@ -170,8 +170,11 @@ const DisplayTimer = () => {
           color={startTimer ? "yellow" : "green"}
           onClick={() =>
             setStartTimer((prev) => {
-              beepAudio.play();
-              return !prev;
+              if (workDuration > 0) {
+                beepAudio.play();
+                return !prev;
+              }
+              return prev;
             })
           }
           sx={{ margin: "0.5em" }}

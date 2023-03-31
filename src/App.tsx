@@ -1,5 +1,4 @@
 import { Flex } from "@mantine/core/";
-import { useState } from "react";
 import "./App.css";
 import DisplayTimer from "./pages/DisplayTimer";
 import TaskList from "./pages/TaskList";

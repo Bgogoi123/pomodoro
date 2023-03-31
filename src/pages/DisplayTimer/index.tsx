@@ -72,6 +72,7 @@ const DisplayTimer = () => {
       return () => clearInterval(localStorage.getItem("timerRef") as string);
     }
     setStartTimer(false);
+    // eslint-disable-next-line
   }, [isBreak, startTimer, cycle, workDuration]);
 
   const operations = () => {

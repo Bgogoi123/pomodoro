@@ -84,6 +84,7 @@ const TaskList = () => {
             tasks.map((task, index) => {
               return (
                 <Checkbox
+                  key={index}
                   checked={task.checked}
                   label={
                     <Flex

@@ -1,9 +1,11 @@
 import { Flex } from "@mantine/core/";
-import "./App.css";
 import DisplayTimer from "./pages/DisplayTimer";
 import TaskList from "./pages/TaskList";
+import { useMediaQuery } from "@mantine/hooks";
 
 function App() {
+  const matches = useMediaQuery("(min-width: 56.25em)");
+  console.log(matches);
   return (
     <Flex
       mih={50}
@@ -13,8 +15,17 @@ function App() {
       direction={{ base: "column", sm: "row" }}
       wrap="wrap"
     >
-      <DisplayTimer />
-      <TaskList />
+      {matches ? (
+        <>
+          <TaskList />
+          <DisplayTimer />
+        </>
+      ) : (
+        <>
+          <DisplayTimer />
+          <TaskList />
+        </>
+      )}
     </Flex>
   );
 }

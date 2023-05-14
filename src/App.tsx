@@ -9,12 +9,12 @@ function App() {
       mih={50}
       gap="md"
       justify="center"
-      align="flex-start"
-      direction="row"
+      align="center"
+      direction={{ base: "column", sm: "row" }}
       wrap="wrap"
     >
-      <TaskList />
       <DisplayTimer />
+      <TaskList />
     </Flex>
   );
 }

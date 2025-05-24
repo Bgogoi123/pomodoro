@@ -1,11 +1,10 @@
 import { CSSObject } from "@mantine/core";
 
 export const taskRoot: CSSObject = {
-  margin: "1em",
   padding: "2em",
   borderRadius: "10px",
-  width: "50vh",
   minHeight: "75vh",
+  border: "1px solid #d6d6d6"
 };
 
 export const strikeText: CSSObject = {

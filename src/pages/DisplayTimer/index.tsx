@@ -116,10 +116,10 @@ const DisplayTimer = () => {
 
   return (
     <Flex
-      gap="md"
-      align="center"
       direction="column"
-      wrap="wrap"
+      gap="0.5rem"
+      justify="center"
+      align="center"
       sx={isBreak ? onBreak : working}
     >
       <p className="headerText">POMODORO</p>
